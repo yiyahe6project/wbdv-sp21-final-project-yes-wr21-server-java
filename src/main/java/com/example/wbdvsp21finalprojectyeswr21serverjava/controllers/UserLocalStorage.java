@@ -1,77 +1,64 @@
 package com.example.wbdvsp21finalprojectyeswr21serverjava.controllers;
 
 import com.example.wbdvsp21finalprojectyeswr21serverjava.models.User;
+import com.example.wbdvsp21finalprojectyeswr21serverjava.services.UserService;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
 import javax.servlet.http.HttpSession;
 
 @RestController
 @CrossOrigin(origins = "*")
-
 public class UserLocalStorage {
+    @Autowired
+    UserService service;
 
-    List<User> users = new ArrayList<User>();
-
-    @GetMapping("/api/register/{u}/{p}")
+    @PostMapping("/api/register")
     public User register(
-            @PathVariable("u") String username,
-            @PathVariable("p") String password,
+            @RequestBody User user,
             HttpSession session) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        session.setAttribute("currentUser", user);
-        users.add(user);
-        return user;
+        return service.register(user, session);
     }
 
     @GetMapping("/api/profile")
     public User profile(HttpSession session) {
-        User currentUser = (User)
-                session.getAttribute("currentUser");
-        return currentUser;
+        return service.profile(session);
     }
 
-    @GetMapping("/api/logout")
+    @PostMapping("/api/logout")
     public void logout
             (HttpSession session) {
-        session.invalidate();
+        service.logout(session);
     }
 
-    @GetMapping("/api/login/{u}/{p}")
+    @PostMapping("/api/login")
     public User login(
-            @PathVariable("u") String username,
-            @PathVariable("p") String password,
+            @RequestBody User credentials,
             HttpSession session) {
-        for (User user : users) {
-            if (user.getUsername().equals(username)
-                    && user.getPassword().equals(password)) {
-                session.setAttribute("currentUser", user);
-                return user;
-            }
-        }
-        return null;
+        return service.login(credentials, session);
     }
 
 
-    @GetMapping("/api/session/set/{attr}/{value}")
-    public String setSessionAttribute(
-            @PathVariable("attr") String attr,
-            @PathVariable("value") String value,
-            HttpSession session) {
-        session.setAttribute(attr, value);
-        return attr + " = " + value;
-    }
-
-    @GetMapping("/api/session/get/{attr}")
-    public String getSessionAttribute(
-            @PathVariable("attr") String attr,
-            HttpSession session) {
-        return (String) session.getAttribute(attr);
-    }
+//    @GetMapping("/api/session/set/{attr}/{value}")
+//    public String setSessionAttribute(
+//            @PathVariable("attr") String attr,
+//            @PathVariable("value") String value,
+//            HttpSession session) {
+//        session.setAttribute(attr, value);
+//        return attr + " = " + value;
+//    }
+//
+//    @GetMapping("/api/session/get/{attr}")
+//    public String getSessionAttribute(
+//            @PathVariable("attr") String attr,
+//            HttpSession session) {
+//        return (String) session.getAttribute(attr);
+//    }
 
 }
