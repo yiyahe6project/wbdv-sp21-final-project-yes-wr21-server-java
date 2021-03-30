@@ -14,16 +14,15 @@ public class UserService {
     List<User> users = new ArrayList<User>();
 
     public User register(User user, HttpSession session) {
-//        User new_user = new User(user);
-        session.setAttribute("currentUser", user);
+        session.setAttribute("profile", user);
         users.add(user);
-        return user;
+        User returnUser = new User(user);
+        returnUser.setPassword("***");
+        return returnUser;
     }
 
     public User profile(HttpSession session) {
-        User currentUser = (User)
-                session.getAttribute("currentUser");
-        return currentUser;
+        return (User) session.getAttribute("profile");
     }
 
     public void logout(HttpSession session) {
@@ -34,11 +33,10 @@ public class UserService {
         for (User user : users) {
             if (user.getUsername().equals(credentials.getUsername())
                     && user.getPassword().equals(credentials.getPassword())) {
-                session.setAttribute("currentUser", user);
+                session.setAttribute("profile", user);
                 return user;
             }
         }
         return null;
     }
-
 }
